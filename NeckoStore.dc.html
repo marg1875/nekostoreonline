@@ -62,6 +62,7 @@
             <div onClick="{{ p.openMe }}" style="cursor:pointer;background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:16px;overflow:hidden;transition:transform .15s;" style-hover="transform:translateY(-4px);border-color:oklch(0.6 0.17 300 / 0.5);">
               <div style="position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;">
                 <span style="position:absolute;top:12px;left:12px;z-index:2;background:oklch(0.6 0.17 300);color:white;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.03em;">DESTACADA</span>
+                <span style="{{ p.usedTagStyle }}">USADA</span>
                 <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:11px;color:oklch(0.4 0.01 300);text-align:center;line-height:1.5;">foto pendiente<br>{{ p.name }}</span>
                 <img src="{{ p.imageUrl }}" alt="{{ p.name }}" style="{{ p.imgStyle }}" />
                 <sc-if value="{{ p.soldOut }}" hint-placeholder-val="{{ false }}">
@@ -93,6 +94,7 @@
           <sc-for list="{{ products }}" as="p" hint-placeholder-count="8">
             <div style="background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:14px;overflow:hidden;">
               <div onClick="{{ p.openMe }}" style="cursor:pointer;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;">
+                <span style="{{ p.usedTagStyle }}">USADA</span>
                 <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:10px;color:oklch(0.45 0.01 300);text-align:center;line-height:1.5;">foto pendiente<br>{{ p.name }}</span>
                 <img src="{{ p.imageUrl }}" alt="{{ p.name }}" style="{{ p.imgStyle }}" />
                 <sc-if value="{{ p.soldOut }}" hint-placeholder-val="{{ false }}">
@@ -121,7 +123,7 @@
       <section id="nosotros" style="padding:60px 32px;background:oklch(0.19 0.005 260);border-top:1px solid oklch(1 0 0 / 0.07);border-bottom:1px solid oklch(1 0 0 / 0.07);">
         <div style="max-width:720px;margin:0 auto;text-align:center;">
           <h2 style="font-family:'Outfit',sans-serif;font-size:26px;font-weight:700;margin:0 0 14px;">Nosotros</h2>
-          <p style="color:oklch(0.72 0.006 260);font-size:15px;line-height:1.7;margin:0;">Somos una tienda pequeña de coleccionistas para coleccionistas. Cada figura que vendemos es nueva y sellada, y como manejamos stock limitado, cada pieza que ves aquí es única: cuando se vende, se va.</p>
+          <p style="color:oklch(0.72 0.006 260);font-size:15px;line-height:1.7;margin:0;">Somos una tienda pequeña de coleccionistas para coleccionistas. Manejamos figuras nuevas selladas y también piezas usadas o reempacadas — solo publicamos las de mejor calidad, y cualquier detalle específico lo indicamos en la descripción de cada pieza. Como manejamos stock limitado, cada pieza que ves aquí es única: cuando se vende, se va.</p>
         </div>
       </section>
 
@@ -134,8 +136,8 @@
             <div style="font-size:14px;color:oklch(0.65 0.006 260);line-height:1.5;">Enviamos por paquetería (Estafeta, DHL, Sepomex y más) a cualquier parte del país.</div>
           </div>
           <div style="background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:12px;padding:20px;">
-            <div style="font-weight:600;margin-bottom:6px;">Producto nuevo</div>
-            <div style="font-size:14px;color:oklch(0.65 0.006 260);line-height:1.5;">Todas las piezas son nuevas y selladas, directo de Banpresto.</div>
+            <div style="font-weight:600;margin-bottom:6px;">Calidad verificada</div>
+            <div style="font-size:14px;color:oklch(0.65 0.006 260);line-height:1.5;">Manejamos piezas nuevas y usadas/reempacadas de Banpresto, siempre de la mejor calidad. La condición de cada figura se indica en su ficha.</div>
           </div>
           <div style="background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:12px;padding:20px;">
             <div style="font-weight:600;margin-bottom:6px;">Sin garantía</div>
@@ -159,6 +161,7 @@
     <main style="max-width:1000px;margin:0 auto;padding:50px 32px 90px;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
         <div style="position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);border-radius:18px;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;">
+          <span style="{{ active.usedTagStyle }}">USADA</span>
           <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:13px;color:oklch(0.45 0.01 300);text-align:center;line-height:1.6;">foto pendiente<br>{{ active.name }}</span>
           <img src="{{ active.imageUrl }}" alt="{{ active.name }}" style="{{ active.imgStyle }}" />
           <sc-if value="{{ active.soldOut }}" hint-placeholder-val="{{ false }}">
@@ -174,7 +177,7 @@
           <div style="{{ active.detailBadgeStyle }}">{{ active.detailBadgeLabel }}</div>
           <p style="color:oklch(0.72 0.006 260);font-size:15px;line-height:1.7;margin:0 0 26px;">{{ active.description }}</p>
           <div style="display:flex;flex-direction:column;gap:10px;padding:18px;background:oklch(0.20 0.006 260);border-radius:12px;margin-bottom:26px;">
-            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Condición</span><span>Nuevo, sellado</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Condición</span><span>{{ active.conditionLabel }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Colección</span><span>Umamusume Pretty Derby</span></div>
             <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Marca</span><span>Banpresto</span></div>
             <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Envío</span><span>Paquetería a todo México</span></div>
@@ -213,7 +216,7 @@ const FALLBACK_PRODUCTS = [
 
 // URL del CSV publicado del Google Sheet (Archivo > Compartir > Publicar en la web > CSV).
 // Vacío = se usa FALLBACK_PRODUCTS de arriba.
-const SHEET_CSV_URL = "";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQY42qFfjJkD6PL9k-xUaSc6bqs0INECM38AwoDTkgYWReTrYwizMXMGKDtgj5P8fKMIR7bziVKZK-H/pub?output=csv";
 
 function parseCSV(text) {
   const rows = [];
@@ -255,6 +258,7 @@ function rowsToProducts(rows) {
       ? img
       : "uploads/" + img.split("/").map(encodeURIComponent).join("/");
     const featured = /^(true|1|si|sí)$/i.test((row.featured || "").trim());
+    const isUsed = /^(used|usada|usado|reempacad)/i.test((row.condition || "").trim());
     return {
       id: Number(row.id) || idx + 1,
       name: row.name || "",
@@ -262,7 +266,9 @@ function rowsToProducts(rows) {
       stock: Number(row.stock) || 0,
       featured,
       imageUrl,
-      desc: row.desc || ""
+      desc: row.desc || "",
+      isUsed,
+      conditionLabel: isUsed ? "Usada / reempacada" : "Nueva, sellada"
     };
   });
 }
@@ -327,12 +333,18 @@ class Component extends DCLogic {
       const detailBuyLabel = soldOut ? "Agotado - No disponible" : "Comprar por WhatsApp";
       const detailBuyHref = soldOut ? void 0 : this.waLinkFor(number, p.name, p.price);
       const detailBuyStyle = soldOut ? "display:block;text-align:center;background:oklch(1 0 0 / 0.05);color:oklch(0.55 0.006 260);padding:15px;border-radius:10px;font-weight:700;font-size:15px;cursor:default;" : "display:block;text-align:center;background:oklch(0.6 0.17 300);color:white;padding:15px;border-radius:10px;font-weight:700;font-size:15px;";
+      const isUsed = !!p.isUsed;
+      const conditionLabel = p.conditionLabel || "Nueva, sellada";
+      const usedTagStyle = isUsed ? "position:absolute;top:12px;right:12px;z-index:2;background:oklch(0.3 0.02 260 / 0.85);color:oklch(0.92 0.01 90);font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;letter-spacing:0.03em;" : "display:none;";
       return {
         ...p,
         priceFmt: this.fmt(p.price),
         waLink: this.waLinkFor(number, p.name, p.price),
         openMe: () => this.openProduct(p.id),
         description: p.desc,
+        isUsed,
+        conditionLabel,
+        usedTagStyle,
         soldOut,
         available,
         imgStyle,
