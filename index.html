@@ -204,14 +204,14 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;whatsappNumber&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;528126998440&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showStockBadge&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
 // Se usa mientras carga el Google Sheet, o si el fetch falla (el sitio nunca se queda en blanco).
 const FALLBACK_PRODUCTS = [
-  { id: 1, name: "Twin Turbo", price: 700, featured: false, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_683951-MLM117101012337_092026-F.jpg", desc: "Figura oficial de Twin Turbo, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 2, name: "Mayano Top Gun", price: 800, featured: false, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_798233-MLM117101247219_092026-F.jpg", desc: "Figura oficial de Mayano Top Gun, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 3, name: "Special Week", price: 800, featured: true, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_711903-MLM117101217569_092026-F.jpg", desc: "Figura oficial de Special Week, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 4, name: "Ikuno Dictus", price: 600, featured: false, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_974423-MLM117101013345_092026-F.jpg", desc: "Figura oficial de Ikuno Dictus, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 5, name: "Daitaku Helios", price: 800, featured: false, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_773714-MLM117101218019_092026-F.jpg", desc: "Figura oficial de Daitaku Helios, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 6, name: "Kitasan Black", price: 900, featured: true, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_886719-MLM115655004116_092026-F.jpg", desc: "Figura oficial de Kitasan Black, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 7, name: "Oguri Cap", price: 1200, featured: true, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_741246-MLM117101071619_092026-F.jpg", desc: "Figura oficial de Oguri Cap, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 8, name: "Satono Diamond", price: 1200, featured: true, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_699012-MLM117101247609_092026-F.jpg", desc: "Figura oficial de Satono Diamond, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." }
+  { id: 1, name: "Twin Turbo", price: 700, featured: false, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "uploads/products-twin-turbo.jpg", desc: "Figura oficial de Twin Turbo, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 2, name: "Mayano Top Gun", price: 800, featured: false, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "uploads/products-mayano-top-gun.jpg", desc: "Figura oficial de Mayano Top Gun, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 3, name: "Special Week", price: 800, featured: true, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "uploads/products-special-week.jpg", desc: "Figura oficial de Special Week, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 4, name: "Ikuno Dictus", price: 600, featured: false, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "uploads/products-ikuno-dictus.jpg", desc: "Figura oficial de Ikuno Dictus, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 5, name: "Daitaku Helios", price: 800, featured: false, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "uploads/products-daitaku-helios.jpg", desc: "Figura oficial de Daitaku Helios, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 6, name: "Kitasan Black", price: 900, featured: true, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "uploads/products-kitasan-black.jpg", desc: "Figura oficial de Kitasan Black, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 7, name: "Oguri Cap", price: 1200, featured: true, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "uploads/products-oguri-cap.jpg", desc: "Figura oficial de Oguri Cap, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 8, name: "Satono Diamond", price: 1200, featured: true, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "uploads/products-satono-diamond.jpg", desc: "Figura oficial de Satono Diamond, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." }
 ];
 
 // URL del CSV publicado del Google Sheet (Archivo > Compartir > Publicar en la web > CSV).
@@ -251,12 +251,36 @@ function parseCSV(text) {
     });
 }
 
+// Tabla de relaciones: URL externa (tal como la pega el usuario en el Sheet) -> copia
+// alojada en este repo. La hoja siempre guarda la URL original de la tienda/proveedor;
+// esta tabla es la que decide qué imagen se sirve de verdad en el sitio. Si una URL
+// nueva todavía no está aquí, se usa tal cual mientras se descarga y se agrega.
+const IMAGE_MAP = {
+  "https://http2.mlstatic.com/D_NQ_NP_683951-MLM117101012337_092026-F.jpg": "uploads/products-twin-turbo.jpg",
+  "https://http2.mlstatic.com/D_NQ_NP_798233-MLM117101247219_092026-F.jpg": "uploads/products-mayano-top-gun.jpg",
+  "https://http2.mlstatic.com/D_NQ_NP_711903-MLM117101217569_092026-F.jpg": "uploads/products-special-week.jpg",
+  "https://http2.mlstatic.com/D_NQ_NP_974423-MLM117101013345_092026-F.jpg": "uploads/products-ikuno-dictus.jpg",
+  "https://http2.mlstatic.com/D_NQ_NP_773714-MLM117101218019_092026-F.jpg": "uploads/products-daitaku-helios.jpg",
+  "https://http2.mlstatic.com/D_NQ_NP_886719-MLM115655004116_092026-F.jpg": "uploads/products-kitasan-black.jpg",
+  "https://http2.mlstatic.com/D_NQ_NP_741246-MLM117101071619_092026-F.jpg": "uploads/products-oguri-cap.jpg",
+  "https://http2.mlstatic.com/D_NQ_NP_699012-MLM117101247609_092026-F.jpg": "uploads/products-satono-diamond.jpg",
+  "https://akibaraxpress.com/cdn/shop/files/img12_1a372a1b-7982-4e62-b57f-82cc91dbdec0.jpg": "uploads/products-yami.jpg",
+  "https://ninoma.com/cdn/shop/files/b8ed589a-c831-4cd5-af87-16dacf6c73a1.webp": "uploads/products-super-sonico.jpg",
+  "https://www.1001hobbies.es/2604967-large_default/furyu-fryu36620-the-melancholy-of-haruhi-suzumiya-bicute-bunnies-har.jpg": "uploads/products-haruhi-suzumiya.webp",
+  "https://akibaraxpress.com/cdn/shop/files/the-melancholy-of-haruhi-suzumiya-bicute-bunnies-figure-yuki-nagato-figuras-furyu-akibara-xpress-2_66758794.jpg": "uploads/products-yuki-nagato.jpg",
+  "https://littlebuddytoys.com/wp-content/uploads/2024/09/AMU-SHP2297_06.jpg": "uploads/products-luo-tian-yin.jpg"
+};
+
+function resolveImage(raw) {
+  const img = (raw || "").trim();
+  if (IMAGE_MAP[img]) return IMAGE_MAP[img];
+  if (/^https?:\/\//i.test(img)) return img;
+  return "uploads/" + img.split("/").map(encodeURIComponent).join("/");
+}
+
 function rowsToProducts(rows) {
   return rows.map((row, idx) => {
-    const img = row.image || "";
-    const imageUrl = /^https?:\/\//i.test(img)
-      ? img
-      : "uploads/" + img.split("/").map(encodeURIComponent).join("/");
+    const imageUrl = resolveImage(row.image);
     const featured = /^(true|1|si|sí)$/i.test((row.featured || "").trim());
     const isUsed = /^(used|usada|usado|reempacad)/i.test((row.condition || "").trim());
     return {
