@@ -11,10 +11,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
   <style>
-    body{margin:0;background:oklch(0.16 0.004 260);}
+    html,body{margin:0;background:oklch(0.16 0.004 260);overflow-x:hidden;max-width:100%;}
     *{box-sizing:border-box;}
     a{color:oklch(0.72 0.15 300);text-decoration:none;}
     a:hover{color:oklch(0.8 0.15 300);}
+    .menu-btn{display:none;background:none;border:1px solid oklch(1 0 0 / 0.15);color:oklch(0.9 0.003 260);width:42px;height:42px;border-radius:8px;font-size:20px;line-height:1;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;}
+    @media (max-width: 760px){
+      .site-nav{display:none !important;}
+      .site-nav.open{display:flex !important;flex-direction:column;align-items:flex-start !important;position:fixed;top:88px;left:0;right:0;background:oklch(0.14 0.004 260);padding:16px 24px 24px;gap:14px;border-bottom:1px solid oklch(1 0 0 / 0.08);z-index:60;max-height:calc(100vh - 88px);overflow-y:auto;}
+      .site-nav.open a{width:100%;font-size:16px;}
+      .menu-btn{display:flex;}
+      .detail-grid{grid-template-columns:1fr !important;gap:28px !important;}
+    }
   </style>
 </helmet>
 
@@ -26,13 +34,14 @@
       <img src="assets/logo.png" alt="Neko Store" style="height: 295px; width: 129px; object-fit: contain; flex-shrink: 0; margin-top: 18px" />
     </div>
     <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
-      <nav style="display:flex;gap:28px;align-items:center;">
-        <a href="#destacados" style="font-size:14px;font-weight:500;color:oklch(0.85 0.005 260);">Destacadas</a>
-        <a href="#catalogo" style="font-size:14px;font-weight:500;color:oklch(0.85 0.005 260);">Catálogo</a>
-        <a href="#nosotros" style="font-size:14px;font-weight:500;color:oklch(0.85 0.005 260);">Nosotros</a>
-        <a href="#contacto" style="font-size:14px;font-weight:500;color:oklch(0.85 0.005 260);">Contacto</a>
+      <nav class="{{ navClass }}" style="display:flex;gap:28px;align-items:center;">
+        <a href="#destacados" onClick="{{ closeMenu }}" style="font-size:14px;font-weight:500;color:oklch(0.85 0.005 260);">Destacadas</a>
+        <a href="#catalogo" onClick="{{ closeMenu }}" style="font-size:14px;font-weight:500;color:oklch(0.85 0.005 260);">Catálogo</a>
+        <a href="#nosotros" onClick="{{ closeMenu }}" style="font-size:14px;font-weight:500;color:oklch(0.85 0.005 260);">Nosotros</a>
+        <a href="#contacto" onClick="{{ closeMenu }}" style="font-size:14px;font-weight:500;color:oklch(0.85 0.005 260);">Contacto</a>
         <a href="{{ generalWaLink }}" target="_blank" style="display:flex;align-items:center;gap:8px;background:oklch(0.6 0.17 300);color:white;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:600;" style-hover="background:oklch(0.68 0.17 300);">Escríbenos</a>
       </nav>
+      <button class="menu-btn" onClick="{{ toggleMenu }}" aria-label="Menú">{{ menuIcon }}</button>
     </sc-if>
     <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
       <button onClick="{{ goHome }}" style="background:none;border:1px solid oklch(1 0 0 / 0.15);color:oklch(0.9 0.003 260);padding:9px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;" style-hover="border-color:oklch(0.6 0.17 300);color:oklch(0.7 0.15 300);">← Volver al catálogo</button>
@@ -159,7 +168,7 @@
   <!-- DETAIL VIEW -->
   <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
     <main style="max-width:1000px;margin:0 auto;padding:50px 32px 90px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
+      <div class="detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
         <div style="position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);border-radius:18px;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;">
           <span style="{{ active.usedTagStyle }}">USADA</span>
           <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:13px;color:oklch(0.45 0.01 300);text-align:center;line-height:1.6;">foto pendiente<br>{{ active.name }}</span>
@@ -300,7 +309,15 @@ function rowsToProducts(rows) {
 }
 
 class Component extends DCLogic {
-  state = { view: "home", activeId: null, sheetProducts: null };
+  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false };
+
+  toggleMenu() {
+    this.setState(s => ({ menuOpen: !s.menuOpen }));
+  }
+
+  closeMenu() {
+    this.setState({ menuOpen: false });
+  }
 
   componentDidMount() {
     if (!SHEET_CSV_URL) return;
@@ -408,7 +425,11 @@ class Component extends DCLogic {
       active,
       goHome: () => this.goHome(),
       generalWaLink: "https://wa.me/" + number + "?text=" + encodeURIComponent("Hola! Vi neckostore y quiero preguntar por su stock de figuras."),
-      showStockBadge
+      showStockBadge,
+      navClass: "site-nav" + (this.state.menuOpen ? " open" : ""),
+      menuIcon: this.state.menuOpen ? "✕" : "☰",
+      toggleMenu: () => this.toggleMenu(),
+      closeMenu: () => this.closeMenu()
     };
   }
 }
