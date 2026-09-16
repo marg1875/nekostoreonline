@@ -69,7 +69,7 @@
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;">
           <sc-for list="{{ featured }}" as="p" hint-placeholder-count="4">
-            <div onClick="{{ p.openMe }}" style="cursor:pointer;background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:16px;overflow:hidden;transition:transform .15s;" style-hover="transform:translateY(-4px);border-color:oklch(0.6 0.17 300 / 0.5);">
+            <div onClick="{{ p.destacadaClick }}" style="cursor:pointer;background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:16px;overflow:hidden;transition:transform .15s;" style-hover="transform:translateY(-4px);border-color:oklch(0.6 0.17 300 / 0.5);">
               <div style="position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;">
                 <span style="position:absolute;top:12px;left:12px;z-index:2;background:oklch(0.6 0.17 300);color:white;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.03em;">DESTACADA</span>
                 <span style="{{ p.usedTagStyle }}">USADA</span>
@@ -431,6 +431,11 @@ class Component extends DCLogic {
     window.scrollTo(0, 0);
   }
 
+  scrollToUpcoming() {
+    const el = document.getElementById("proximamente");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   goHome() {
     this.setState({ view: "home", activeId: null, zoomImage: null });
   }
@@ -441,14 +446,15 @@ class Component extends DCLogic {
     const catalog = this.state.sheetProducts || FALLBACK_PRODUCTS;
 
     const withExtras = catalog.map(p => {
-      const soldOut = p.stock <= 0;
+      const soldOut = p.stock <= 0 && !p.isUpcoming;
       const available = !soldOut;
       const imgStyle = "position:relative;z-index:1;width:100%;height:100%;object-fit:contain;" + (soldOut ? "filter:grayscale(1) opacity(0.45);" : "");
       const showPiece = showStockBadge && available;
       const stockLabel = soldOut ? "Agotado" : (showPiece ? "1 pieza" : "");
       const stockLabelStyle = "font-size:11px;font-weight:600;" + (soldOut ? "color:oklch(0.6 0.006 260);" : "color:oklch(0.65 0.15 30);");
-      const destacadaLabel = soldOut ? "Agotado" : "Última pieza";
-      const destacadaLabelStyle = "font-size:12px;font-weight:600;" + (soldOut ? "color:oklch(0.6 0.006 260);" : "color:oklch(0.65 0.15 30);");
+      const destacadaLabel = p.isUpcoming ? "Próximamente" : (soldOut ? "Agotado" : "Última pieza");
+      const destacadaLabelStyle = "font-size:12px;font-weight:600;" + (p.isUpcoming ? "color:oklch(0.7 0.15 250);" : (soldOut ? "color:oklch(0.6 0.006 260);" : "color:oklch(0.65 0.15 30);"));
+      const destacadaClick = p.isUpcoming ? (() => this.scrollToUpcoming()) : (() => this.openProduct(p.id));
       const buyLabel = soldOut ? "Agotado" : "Comprar";
       const buyHref = soldOut ? void 0 : this.waLinkFor(number, p.name, p.price);
       const buyStyle = soldOut ? "flex:1;text-align:center;background:oklch(1 0 0 / 0.05);color:oklch(0.55 0.006 260);padding:8px;border-radius:7px;font-size:12px;font-weight:600;cursor:default;" : "flex:1;text-align:center;background:oklch(0.6 0.17 300);color:white;padding:8px;border-radius:7px;font-size:12px;font-weight:600;";
@@ -473,6 +479,7 @@ class Component extends DCLogic {
         waLink: this.waLinkFor(number, p.name, p.price),
         openMe: () => this.openProduct(p.id),
         openZoomImg: () => this.openZoom(p.imageUrl, p.name),
+        destacadaClick,
         description: p.desc,
         isUsed,
         conditionLabel,
@@ -506,7 +513,7 @@ class Component extends DCLogic {
 
     return {
       products: catalogItems,
-      featured: catalogItems.filter(p => p.featured),
+      featured: withExtras.filter(p => p.featured),
       stockCount: catalogItems.filter(p => !p.soldOut).length,
       upcoming: upcomingItems,
       hasUpcoming: upcomingItems.length > 0,
