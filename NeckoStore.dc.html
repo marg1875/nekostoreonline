@@ -200,7 +200,7 @@
   <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
     <main style="max-width:1000px;margin:0 auto;padding:50px 32px 90px;">
       <div class="detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
-        <div style="position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);border-radius:18px;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;">
+        <div onClick="{{ openZoom }}" style="cursor:zoom-in;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);border-radius:18px;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;">
           <span style="{{ active.usedTagStyle }}">USADA</span>
           <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:13px;color:oklch(0.45 0.01 300);text-align:center;line-height:1.6;">foto pendiente<br>{{ active.name }}</span>
           <img src="{{ active.imageUrl }}" alt="{{ active.name }}" style="{{ active.imgStyle }}" />
@@ -209,6 +209,7 @@
               <span style="transform:rotate(-16deg);background:oklch(0.15 0 0 / 0.85);border:2px solid white;color:white;font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;letter-spacing:0.06em;padding:10px 30px;white-space:nowrap;">SIN STOCK</span>
             </div>
           </sc-if>
+          <span style="position:absolute;bottom:14px;right:14px;z-index:3;background:oklch(0.1 0 0 / 0.6);color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none;">🔍</span>
         </div>
         <div>
           <div style="font-size:13px;color:oklch(0.72 0.15 300);font-weight:600;margin-bottom:10px;">{{ active.brandLine }}</div>
@@ -227,6 +228,12 @@
         </div>
       </div>
     </main>
+    <sc-if value="{{ zoomOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeZoom }}" style="position:fixed;inset:0;z-index:100;background:oklch(0.05 0 0 / 0.92);display:flex;align-items:center;justify-content:center;padding:32px;cursor:zoom-out;">
+        <img src="{{ active.imageUrl }}" alt="{{ active.name }}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;" />
+        <button onClick="{{ closeZoom }}" style="position:absolute;top:20px;right:20px;background:oklch(1 0 0 / 0.1);border:1px solid oklch(1 0 0 / 0.25);color:white;width:42px;height:42px;border-radius:50%;font-size:20px;cursor:pointer;font-family:inherit;">✕</button>
+      </div>
+    </sc-if>
   </sc-if>
 
   <!-- FOOTER -->
@@ -348,10 +355,18 @@ function rowsToProducts(rows) {
 }
 
 class Component extends DCLogic {
-  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false };
+  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false, zoomOpen: false };
 
   toggleMenu() {
     this.setState(s => ({ menuOpen: !s.menuOpen }));
+  }
+
+  openZoom() {
+    this.setState({ zoomOpen: true });
+  }
+
+  closeZoom() {
+    this.setState({ zoomOpen: false });
   }
 
   closeMenu() {
@@ -391,12 +406,12 @@ class Component extends DCLogic {
   }
 
   openProduct(id) {
-    this.setState({ view: "detail", activeId: id });
+    this.setState({ view: "detail", activeId: id, zoomOpen: false });
     window.scrollTo(0, 0);
   }
 
   goHome() {
-    this.setState({ view: "home", activeId: null });
+    this.setState({ view: "home", activeId: null, zoomOpen: false });
   }
 
   renderVals() {
@@ -482,7 +497,10 @@ class Component extends DCLogic {
       navClass: "site-nav" + (this.state.menuOpen ? " open" : ""),
       menuIcon: this.state.menuOpen ? "✕" : "☰",
       toggleMenu: () => this.toggleMenu(),
-      closeMenu: () => this.closeMenu()
+      closeMenu: () => this.closeMenu(),
+      zoomOpen: this.state.zoomOpen,
+      openZoom: () => this.openZoom(),
+      closeZoom: () => this.closeZoom()
     };
   }
 }
