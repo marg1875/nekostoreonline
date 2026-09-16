@@ -141,11 +141,12 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;">
           <sc-for list="{{ upcoming }}" as="p" hint-placeholder-count="4">
             <div style="background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:14px;overflow:hidden;">
-              <div style="position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;">
+              <div onClick="{{ p.openZoomImg }}" style="cursor:zoom-in;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;">
                 <span style="position:absolute;top:12px;left:12px;z-index:2;background:oklch(0.5 0.13 250);color:white;font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;letter-spacing:0.03em;">PRÓXIMAMENTE</span>
                 <span style="{{ p.usedTagStyle }}">USADA</span>
                 <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:10px;color:oklch(0.45 0.01 300);text-align:center;line-height:1.5;">foto pendiente<br>{{ p.name }}</span>
                 <img src="{{ p.imageUrl }}" alt="{{ p.name }}" style="position:relative;z-index:1;width:100%;height:100%;object-fit:contain;" />
+                <span style="position:absolute;bottom:10px;right:10px;z-index:3;background:oklch(0.1 0 0 / 0.6);color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;pointer-events:none;">🔍</span>
               </div>
               <div style="padding:14px;">
                 <div style="font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.3;min-height:36px;">{{ p.name }}</div>
@@ -200,7 +201,7 @@
   <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
     <main style="max-width:1000px;margin:0 auto;padding:50px 32px 90px;">
       <div class="detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
-        <div onClick="{{ openZoom }}" style="cursor:zoom-in;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);border-radius:18px;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;">
+        <div onClick="{{ active.openZoomImg }}" style="cursor:zoom-in;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);border-radius:18px;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;">
           <span style="{{ active.usedTagStyle }}">USADA</span>
           <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:13px;color:oklch(0.45 0.01 300);text-align:center;line-height:1.6;">foto pendiente<br>{{ active.name }}</span>
           <img src="{{ active.imageUrl }}" alt="{{ active.name }}" style="{{ active.imgStyle }}" />
@@ -228,12 +229,14 @@
         </div>
       </div>
     </main>
-    <sc-if value="{{ zoomOpen }}" hint-placeholder-val="{{ false }}">
-      <div onClick="{{ closeZoom }}" style="position:fixed;inset:0;z-index:100;background:oklch(0.05 0 0 / 0.92);display:flex;align-items:center;justify-content:center;padding:32px;cursor:zoom-out;">
-        <img src="{{ active.imageUrl }}" alt="{{ active.name }}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;" />
-        <button onClick="{{ closeZoom }}" style="position:absolute;top:20px;right:20px;background:oklch(1 0 0 / 0.1);border:1px solid oklch(1 0 0 / 0.25);color:white;width:42px;height:42px;border-radius:50%;font-size:20px;cursor:pointer;font-family:inherit;">✕</button>
-      </div>
-    </sc-if>
+  </sc-if>
+
+  <!-- ZOOM DE IMAGEN (funciona desde cualquier tarjeta) -->
+  <sc-if value="{{ zoomImage }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeZoom }}" style="position:fixed;inset:0;z-index:100;background:oklch(0.05 0 0 / 0.92);display:flex;align-items:center;justify-content:center;padding:32px;cursor:zoom-out;">
+      <img src="{{ zoomImage }}" alt="{{ zoomAlt }}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;" />
+      <button onClick="{{ closeZoom }}" style="position:absolute;top:20px;right:20px;background:oklch(1 0 0 / 0.1);border:1px solid oklch(1 0 0 / 0.25);color:white;width:42px;height:42px;border-radius:50%;font-size:20px;cursor:pointer;font-family:inherit;">✕</button>
+    </div>
   </sc-if>
 
   <!-- FOOTER -->
@@ -320,7 +323,7 @@ const IMAGE_MAP = {
   "https://www.taito.co.jp/Content/images/zone/2/item/201407/5d862a46-e680-45d6-a58d-68c592caf0f5_p_01_ja.jpg": "uploads/products-miku-tmost-standard.jpg",
   "https://www.taito.co.jp/Content/images/zone/2/item/201407/5309654f-452f-44ba-ad1e-05a117e9bd05_p_01_ja.jpg": "uploads/products-miku-tmost-ntver.jpg",
   "https://bsp-prize.jp/files_thumbnail/%E5%85%B1%E6%9C%89%E3%83%95%E3%82%A9%E3%83%AB%E3%83%80/item/2026.08/2784576_a.jpg/500w_500h.jpg": "uploads/products-miku-evolve-nutcracker.jpg",
-  "https://bsp-prize.jp/files_thumbnail/%E5%85%B1%E6%9C%89%E3%83%95%E3%82%A9%E3%83%AB%E3%83%80/item/2025.08/2789760_1a.jpg/500w_500h.jpg": "uploads/products-miku-evolve-clione.jpg"
+  "https://www.pro-bems.com/IMAGES/images_1/FIGBP30010P/m/FIGBP30010P_5.jpg": "uploads/products-miku-evolve-jellyfish.jpg"
 };
 
 const MESES_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
@@ -372,18 +375,18 @@ function rowsToProducts(rows) {
 }
 
 class Component extends DCLogic {
-  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false, zoomOpen: false };
+  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false, zoomImage: null, zoomAlt: "" };
 
   toggleMenu() {
     this.setState(s => ({ menuOpen: !s.menuOpen }));
   }
 
-  openZoom() {
-    this.setState({ zoomOpen: true });
+  openZoom(url, alt) {
+    this.setState({ zoomImage: url, zoomAlt: alt || "" });
   }
 
   closeZoom() {
-    this.setState({ zoomOpen: false });
+    this.setState({ zoomImage: null, zoomAlt: "" });
   }
 
   closeMenu() {
@@ -423,12 +426,12 @@ class Component extends DCLogic {
   }
 
   openProduct(id) {
-    this.setState({ view: "detail", activeId: id, zoomOpen: false });
+    this.setState({ view: "detail", activeId: id, zoomImage: null });
     window.scrollTo(0, 0);
   }
 
   goHome() {
-    this.setState({ view: "home", activeId: null, zoomOpen: false });
+    this.setState({ view: "home", activeId: null, zoomImage: null });
   }
 
   renderVals() {
@@ -468,6 +471,7 @@ class Component extends DCLogic {
         priceFmt: this.fmt(p.price),
         waLink: this.waLinkFor(number, p.name, p.price),
         openMe: () => this.openProduct(p.id),
+        openZoomImg: () => this.openZoom(p.imageUrl, p.name),
         description: p.desc,
         isUsed,
         conditionLabel,
@@ -515,8 +519,8 @@ class Component extends DCLogic {
       menuIcon: this.state.menuOpen ? "✕" : "☰",
       toggleMenu: () => this.toggleMenu(),
       closeMenu: () => this.closeMenu(),
-      zoomOpen: this.state.zoomOpen,
-      openZoom: () => this.openZoom(),
+      zoomImage: this.state.zoomImage,
+      zoomAlt: this.state.zoomAlt,
       closeZoom: () => this.closeZoom()
     };
   }
