@@ -323,6 +323,23 @@ const IMAGE_MAP = {
   "https://bsp-prize.jp/files_thumbnail/%E5%85%B1%E6%9C%89%E3%83%95%E3%82%A9%E3%83%AB%E3%83%80/item/2025.08/2789760_1a.jpg/500w_500h.jpg": "uploads/products-miku-evolve-clione.jpg"
 };
 
+const MESES_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+
+// El Sheet guarda la fecha con el selector de calendario de Google (día/mes/año,
+// ej. "2/10/2026"). Aquí se convierte a texto legible ("2 de octubre de 2026")
+// para el sitio y el mensaje de WhatsApp, sin que el usuario tenga que cambiar
+// cómo captura la fecha.
+function formatArrival(raw) {
+  const s = (raw || "").trim();
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!m) return s;
+  const day = Number(m[1]);
+  const month = Number(m[2]);
+  const year = m[3];
+  if (month < 1 || month > 12) return s;
+  return day + " de " + MESES_ES[month - 1] + " de " + year;
+}
+
 function resolveImage(raw) {
   const img = (raw || "").trim();
   if (IMAGE_MAP[img]) return IMAGE_MAP[img];
@@ -349,7 +366,7 @@ function rowsToProducts(rows) {
       brand: row.brand || "",
       collection: row.collection || "",
       isUpcoming,
-      arrival: (row.arrival || "").trim()
+      arrival: formatArrival(row.arrival)
     };
   });
 }
