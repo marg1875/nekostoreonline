@@ -72,7 +72,7 @@
                 </sc-if>
               </div>
               <div style="padding:18px;">
-                <div style="font-size:12px;color:oklch(0.6 0.006 260);margin-bottom:4px;">Banpresto · Umamusume</div>
+                <div style="font-size:12px;color:oklch(0.6 0.006 260);margin-bottom:4px;">{{ p.brandLine }}</div>
                 <div style="font-family:'Outfit',sans-serif;font-size:17px;font-weight:600;margin-bottom:10px;">{{ p.name }}</div>
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                   <span style="font-size:19px;font-weight:700;">{{ p.priceFmt }}</span>
@@ -171,15 +171,15 @@
           </sc-if>
         </div>
         <div>
-          <div style="font-size:13px;color:oklch(0.72 0.15 300);font-weight:600;margin-bottom:10px;">Banpresto · Umamusume Pretty Derby</div>
+          <div style="font-size:13px;color:oklch(0.72 0.15 300);font-weight:600;margin-bottom:10px;">{{ active.brandLine }}</div>
           <h1 style="font-family:'Outfit',sans-serif;font-size:34px;font-weight:800;line-height:1.1;margin:0 0 16px;">{{ active.name }}</h1>
           <div style="font-size:28px;font-weight:700;margin-bottom:18px;">{{ active.priceFmt }}</div>
           <div style="{{ active.detailBadgeStyle }}">{{ active.detailBadgeLabel }}</div>
           <p style="color:oklch(0.72 0.006 260);font-size:15px;line-height:1.7;margin:0 0 26px;">{{ active.description }}</p>
           <div style="display:flex;flex-direction:column;gap:10px;padding:18px;background:oklch(0.20 0.006 260);border-radius:12px;margin-bottom:26px;">
             <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Condición</span><span>{{ active.conditionLabel }}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Colección</span><span>Umamusume Pretty Derby</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Marca</span><span>Banpresto</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Colección</span><span>{{ active.collectionSpec }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Marca</span><span>{{ active.brandSpec }}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Envío</span><span>Paquetería a todo México</span></div>
             <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:oklch(0.6 0.006 260);">Garantía</span><span>Sin garantía</span></div>
           </div>
@@ -204,14 +204,14 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;whatsappNumber&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;528126998440&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showStockBadge&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
 // Se usa mientras carga el Google Sheet, o si el fetch falla (el sitio nunca se queda en blanco).
 const FALLBACK_PRODUCTS = [
-  { id: 1, name: "Twin Turbo", price: 700, featured: false, stock: 0, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_683951-MLM117101012337_092026-F.jpg", desc: "Figura oficial de Twin Turbo, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 2, name: "Mayano Top Gun", price: 800, featured: false, stock: 1, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_798233-MLM117101247219_092026-F.jpg", desc: "Figura oficial de Mayano Top Gun, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 3, name: "Special Week", price: 800, featured: true, stock: 1, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_711903-MLM117101217569_092026-F.jpg", desc: "Figura oficial de Special Week, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 4, name: "Ikuno Dictus", price: 600, featured: false, stock: 0, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_974423-MLM117101013345_092026-F.jpg", desc: "Figura oficial de Ikuno Dictus, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 5, name: "Daitaku Helios", price: 800, featured: false, stock: 1, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_773714-MLM117101218019_092026-F.jpg", desc: "Figura oficial de Daitaku Helios, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 6, name: "Kitasan Black", price: 900, featured: true, stock: 0, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_886719-MLM115655004116_092026-F.jpg", desc: "Figura oficial de Kitasan Black, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 7, name: "Oguri Cap", price: 1200, featured: true, stock: 1, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_741246-MLM117101071619_092026-F.jpg", desc: "Figura oficial de Oguri Cap, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
-  { id: 8, name: "Satono Diamond", price: 1200, featured: true, stock: 0, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_699012-MLM117101247609_092026-F.jpg", desc: "Figura oficial de Satono Diamond, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." }
+  { id: 1, name: "Twin Turbo", price: 700, featured: false, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_683951-MLM117101012337_092026-F.jpg", desc: "Figura oficial de Twin Turbo, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 2, name: "Mayano Top Gun", price: 800, featured: false, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_798233-MLM117101247219_092026-F.jpg", desc: "Figura oficial de Mayano Top Gun, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 3, name: "Special Week", price: 800, featured: true, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_711903-MLM117101217569_092026-F.jpg", desc: "Figura oficial de Special Week, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 4, name: "Ikuno Dictus", price: 600, featured: false, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_974423-MLM117101013345_092026-F.jpg", desc: "Figura oficial de Ikuno Dictus, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 5, name: "Daitaku Helios", price: 800, featured: false, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_773714-MLM117101218019_092026-F.jpg", desc: "Figura oficial de Daitaku Helios, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 6, name: "Kitasan Black", price: 900, featured: true, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_886719-MLM115655004116_092026-F.jpg", desc: "Figura oficial de Kitasan Black, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 7, name: "Oguri Cap", price: 1200, featured: true, stock: 1, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_741246-MLM117101071619_092026-F.jpg", desc: "Figura oficial de Oguri Cap, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
+  { id: 8, name: "Satono Diamond", price: 1200, featured: true, stock: 0, brand: "Banpresto", collection: "Umamusume Pretty Derby", imageUrl: "https://http2.mlstatic.com/D_NQ_NP_699012-MLM117101247609_092026-F.jpg", desc: "Figura oficial de Satono Diamond, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." }
 ];
 
 // URL del CSV publicado del Google Sheet (Archivo > Compartir > Publicar en la web > CSV).
@@ -268,7 +268,9 @@ function rowsToProducts(rows) {
       imageUrl,
       desc: row.desc || "",
       isUsed,
-      conditionLabel: isUsed ? "Usada / reempacada" : "Nueva, sellada"
+      conditionLabel: isUsed ? "Usada / reempacada" : "Nueva, sellada",
+      brand: row.brand || "",
+      collection: row.collection || ""
     };
   });
 }
@@ -336,6 +338,11 @@ class Component extends DCLogic {
       const isUsed = !!p.isUsed;
       const conditionLabel = p.conditionLabel || "Nueva, sellada";
       const usedTagStyle = isUsed ? "position:absolute;top:12px;right:12px;z-index:2;background:oklch(0.3 0.02 260 / 0.85);color:oklch(0.92 0.01 90);font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;letter-spacing:0.03em;" : "display:none;";
+      const brand = (p.brand || "").trim();
+      const collection = (p.collection || "").trim();
+      const brandLine = brand && collection ? brand + " · " + collection : (brand || collection || "Figura de colección");
+      const brandSpec = brand || "—";
+      const collectionSpec = collection || "—";
       return {
         ...p,
         priceFmt: this.fmt(p.price),
@@ -345,6 +352,9 @@ class Component extends DCLogic {
         isUsed,
         conditionLabel,
         usedTagStyle,
+        brandLine,
+        brandSpec,
+        collectionSpec,
         soldOut,
         available,
         imgStyle,
