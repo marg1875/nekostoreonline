@@ -199,7 +199,8 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;whatsappNumber&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;528126998440&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showStockBadge&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
-const RAW_PRODUCTS = [
+// Se usa mientras carga el Google Sheet, o si el fetch falla (el sitio nunca se queda en blanco).
+const FALLBACK_PRODUCTS = [
   { id: 1, name: "Twin Turbo", price: 700, featured: false, stock: 0, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_683951-MLM117101012337_092026-F.jpg", desc: "Figura oficial de Twin Turbo, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
   { id: 2, name: "Mayano Top Gun", price: 800, featured: false, stock: 1, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_798233-MLM117101247219_092026-F.jpg", desc: "Figura oficial de Mayano Top Gun, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
   { id: 3, name: "Special Week", price: 800, featured: true, stock: 1, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_711903-MLM117101217569_092026-F.jpg", desc: "Figura oficial de Special Week, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." },
@@ -210,8 +211,81 @@ const RAW_PRODUCTS = [
   { id: 8, name: "Satono Diamond", price: 1200, featured: true, stock: 0, imageUrl: "https://http2.mlstatic.com/D_NQ_NP_699012-MLM117101247609_092026-F.jpg", desc: "Figura oficial de Satono Diamond, de la línea Umamusume Pretty Derby de Banpresto. Pieza nueva y sellada." }
 ];
 
+// URL del CSV publicado del Google Sheet (Archivo > Compartir > Publicar en la web > CSV).
+// Vacío = se usa FALLBACK_PRODUCTS de arriba.
+const SHEET_CSV_URL = "";
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = "", inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === ",") {
+      row.push(field); field = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field); field = "";
+      rows.push(row); row = [];
+    } else {
+      field += c;
+    }
+  }
+  if (field !== "" || row.length) { row.push(field); rows.push(row); }
+  const header = (rows.shift() || []).map(h => h.trim());
+  return rows
+    .filter(r => r.length && r.some(v => v.trim() !== ""))
+    .map(r => {
+      const obj = {};
+      header.forEach((h, idx) => { obj[h] = (r[idx] ?? "").trim(); });
+      return obj;
+    });
+}
+
+function rowsToProducts(rows) {
+  return rows.map((row, idx) => {
+    const img = row.image || "";
+    const imageUrl = /^https?:\/\//i.test(img)
+      ? img
+      : "uploads/" + img.split("/").map(encodeURIComponent).join("/");
+    const featured = /^(true|1|si|sí)$/i.test((row.featured || "").trim());
+    return {
+      id: Number(row.id) || idx + 1,
+      name: row.name || "",
+      price: Number(row.price) || 0,
+      stock: Number(row.stock) || 0,
+      featured,
+      imageUrl,
+      desc: row.desc || ""
+    };
+  });
+}
+
 class Component extends DCLogic {
-  state = { view: "home", activeId: null };
+  state = { view: "home", activeId: null, sheetProducts: null };
+
+  componentDidMount() {
+    if (!SHEET_CSV_URL) return;
+    this.loadCatalog();
+  }
+
+  async loadCatalog() {
+    try {
+      const res = await fetch(SHEET_CSV_URL + (SHEET_CSV_URL.includes("?") ? "&" : "?") + "t=" + Date.now());
+      if (!res.ok) return;
+      const rows = parseCSV(await res.text());
+      const products = rowsToProducts(rows);
+      if (products.length) this.setState({ sheetProducts: products });
+    } catch (e) {
+      // se queda con FALLBACK_PRODUCTS
+    }
+  }
 
   fmt(price) {
     return "$" + price.toLocaleString("es-MX") + " MXN";
@@ -234,8 +308,9 @@ class Component extends DCLogic {
   renderVals() {
     const number = this.props.whatsappNumber || "528126998440";
     const showStockBadge = this.props.showStockBadge ?? true;
+    const catalog = this.state.sheetProducts || FALLBACK_PRODUCTS;
 
-    const withExtras = RAW_PRODUCTS.map(p => {
+    const withExtras = catalog.map(p => {
       const soldOut = p.stock <= 0;
       const available = !soldOut;
       const imgStyle = "position:relative;z-index:1;width:100%;height:100%;object-fit:contain;" + (soldOut ? "filter:grayscale(1) opacity(0.45);" : "");
