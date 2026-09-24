@@ -73,7 +73,6 @@
               <div style="position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;">
                 <span style="position:absolute;top:12px;left:12px;z-index:2;background:oklch(0.6 0.17 300);color:white;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.03em;">DESTACADA</span>
                 <span style="{{ p.usedTagStyle }}">USADA</span>
-                <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:11px;color:oklch(0.4 0.01 300);text-align:center;line-height:1.5;">foto pendiente<br>{{ p.name }}</span>
                 <img src="{{ p.imageUrl }}" alt="{{ p.name }}" style="{{ p.imgStyle }}" />
                 <sc-if value="{{ p.soldOut }}" hint-placeholder-val="{{ false }}">
                   <div style="position:absolute;inset:0;z-index:2;background:oklch(0.1 0 0 / 0.5);display:flex;align-items:center;justify-content:center;pointer-events:none;">
@@ -105,7 +104,6 @@
             <div style="background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:14px;overflow:hidden;">
               <div onClick="{{ p.openMe }}" style="cursor:pointer;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;">
                 <span style="{{ p.usedTagStyle }}">USADA</span>
-                <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:10px;color:oklch(0.45 0.01 300);text-align:center;line-height:1.5;">foto pendiente<br>{{ p.name }}</span>
                 <img src="{{ p.imageUrl }}" alt="{{ p.name }}" style="{{ p.imgStyle }}" />
                 <sc-if value="{{ p.soldOut }}" hint-placeholder-val="{{ false }}">
                   <div style="position:absolute;inset:0;z-index:2;background:oklch(0.1 0 0 / 0.5);display:flex;align-items:center;justify-content:center;pointer-events:none;">
@@ -145,7 +143,6 @@
               <div onClick="{{ p.openZoomImg }}" style="cursor:zoom-in;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;">
                 <span style="position:absolute;top:12px;left:12px;z-index:2;background:oklch(0.5 0.13 250);color:white;font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;letter-spacing:0.03em;">PRÓXIMAMENTE</span>
                 <span style="{{ p.usedTagStyle }}">USADA</span>
-                <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:10px;color:oklch(0.45 0.01 300);text-align:center;line-height:1.5;">foto pendiente<br>{{ p.name }}</span>
                 <img src="{{ p.imageUrl }}" alt="{{ p.name }}" style="position:relative;z-index:1;width:100%;height:100%;object-fit:contain;" />
                 <span style="position:absolute;bottom:10px;right:10px;z-index:3;background:oklch(0.1 0 0 / 0.6);color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;pointer-events:none;">🔍</span>
               </div>
@@ -204,7 +201,6 @@
       <div class="detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
         <div onClick="{{ active.openZoomImg }}" style="cursor:zoom-in;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);border-radius:18px;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;">
           <span style="{{ active.usedTagStyle }}">USADA</span>
-          <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:13px;color:oklch(0.45 0.01 300);text-align:center;line-height:1.6;">foto pendiente<br>{{ active.name }}</span>
           <img src="{{ active.imageUrl }}" alt="{{ active.name }}" style="{{ active.imgStyle }}" />
           <sc-if value="{{ active.soldOut }}" hint-placeholder-val="{{ false }}">
             <div style="position:absolute;inset:0;z-index:2;background:oklch(0.1 0 0 / 0.5);display:flex;align-items:center;justify-content:center;pointer-events:none;border-radius:18px;">
