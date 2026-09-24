@@ -23,6 +23,11 @@
       .site-nav.open a{width:100%;font-size:16px;}
       .menu-btn{display:flex;}
       .detail-grid{grid-template-columns:1fr !important;gap:28px !important;}
+      .section-pad{padding-left:16px !important;padding-right:16px !important;}
+      .product-grid{grid-template-columns:repeat(2,1fr) !important;gap:10px !important;}
+      .product-grid .buy-row{gap:5px !important;}
+      .product-grid .buy-row button,
+      .product-grid .buy-row a{padding:7px 4px !important;font-size:11px !important;}
     }
   </style>
 </helmet>
@@ -62,12 +67,12 @@
       </section>
 
       <!-- DESTACADAS -->
-      <section id="destacados" style="padding:40px 32px 70px;max-width:1200px;margin:0 auto;">
+      <section id="destacados" class="section-pad" style="padding:40px 32px 70px;max-width:1200px;margin:0 auto;">
         <div style="margin-bottom:32px;">
           <h2 style="font-family:'Outfit',sans-serif;font-size:30px;font-weight:700;margin:0 0 8px;">Destacadas</h2>
           <p style="color:oklch(0.65 0.006 260);font-size:15px;margin:0;">Las piezas que más nos gustan de este mes</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;">
+        <div class="product-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;">
           <sc-for list="{{ featuredPageItems }}" as="p" hint-placeholder-count="4">
             <div onClick="{{ p.destacadaClick }}" style="cursor:pointer;background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:16px;overflow:hidden;transition:transform .15s;" style-hover="transform:translateY(-4px);border-color:oklch(0.6 0.17 300 / 0.5);">
               <div style="position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;">
@@ -105,12 +110,12 @@
       </section>
 
       <!-- CATALOGO -->
-      <section id="catalogo" style="padding:40px 32px 80px;max-width:1200px;margin:0 auto;">
+      <section id="catalogo" class="section-pad" style="padding:40px 32px 80px;max-width:1200px;margin:0 auto;">
         <div style="margin-bottom:32px;">
           <h2 style="font-family:'Outfit',sans-serif;font-size:30px;font-weight:700;margin:0 0 8px;">Todo el stock</h2>
           <p style="color:oklch(0.65 0.006 260);font-size:15px;margin:0;">{{ stockCount }} figuras disponibles ahora mismo</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;">
+        <div class="product-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;">
           <sc-for list="{{ products }}" as="p" hint-placeholder-count="8">
             <div style="background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:14px;overflow:hidden;">
               <div onClick="{{ p.openMe }}" style="cursor:pointer;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;">
@@ -128,7 +133,7 @@
                   <span style="font-size:17px;font-weight:700;">{{ p.priceFmt }}</span>
                   <span style="{{ p.stockLabelStyle }}">{{ p.stockLabel }}</span>
                 </div>
-                <div style="display:flex;gap:8px;">
+                <div class="buy-row" style="display:flex;gap:8px;">
                   <button onClick="{{ p.openMe }}" style="flex:1;background:oklch(1 0 0 / 0.06);border:1px solid oklch(1 0 0 / 0.1);color:oklch(0.9 0.003 260);padding:8px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Ver</button>
                   <a href="{{ p.buyHref }}" target="_blank" style="{{ p.buyStyle }}">{{ p.buyLabel }}</a>
                 </div>
@@ -140,7 +145,7 @@
 
       <!-- PROXIMA MERCANCIA -->
       <sc-if value="{{ hasUpcoming }}" hint-placeholder-val="{{ false }}">
-      <section id="proximamente" style="padding:40px 32px 80px;max-width:1200px;margin:0 auto;">
+      <section id="proximamente" class="section-pad" style="padding:40px 32px 80px;max-width:1200px;margin:0 auto;">
         <div style="margin-bottom:20px;">
           <h2 style="font-family:'Outfit',sans-serif;font-size:30px;font-weight:700;margin:0 0 8px;">Próxima mercancía</h2>
           <p style="color:oklch(0.65 0.006 260);font-size:15px;margin:0;">Piezas ya compradas y en camino — apártalas antes de que lleguen.</p>
@@ -148,7 +153,7 @@
         <div style="background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:14px;color:oklch(0.72 0.006 260);line-height:1.6;">
           El apartado tiene un costo de <strong style="color:oklch(0.96 0.003 260);">$100 MXN</strong> y se guarda hasta <strong style="color:oklch(0.96 0.003 260);">2 semanas</strong> a partir de su llegada al almacén.
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;">
+        <div class="product-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;">
           <sc-for list="{{ upcoming }}" as="p" hint-placeholder-count="4">
             <div style="background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:14px;overflow:hidden;">
               <div onClick="{{ p.openZoomImg }}" style="cursor:zoom-in;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;">
