@@ -68,7 +68,7 @@
           <p style="color:oklch(0.65 0.006 260);font-size:15px;margin:0;">Las piezas que más nos gustan de este mes</p>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;">
-          <sc-for list="{{ featured }}" as="p" hint-placeholder-count="4">
+          <sc-for list="{{ featuredPageItems }}" as="p" hint-placeholder-count="4">
             <div onClick="{{ p.destacadaClick }}" style="cursor:pointer;background:oklch(0.20 0.006 260);border:1px solid oklch(1 0 0 / 0.07);border-radius:16px;overflow:hidden;transition:transform .15s;" style-hover="transform:translateY(-4px);border-color:oklch(0.6 0.17 300 / 0.5);">
               <div style="position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;">
                 <span style="position:absolute;top:12px;left:12px;z-index:2;background:oklch(0.6 0.17 300);color:white;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.03em;">DESTACADA</span>
@@ -91,6 +91,17 @@
             </div>
           </sc-for>
         </div>
+        <sc-if value="{{ showFeaturedNav }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-top:24px;">
+            <button onClick="{{ prevFeatured }}" aria-label="Anteriores" style="background:oklch(1 0 0 / 0.06);border:1px solid oklch(1 0 0 / 0.12);color:oklch(0.9 0.003 260);width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer;font-family:inherit;">‹</button>
+            <div style="display:flex;gap:8px;">
+              <sc-for list="{{ featuredDots }}" as="d" hint-placeholder-count="2">
+                <span onClick="{{ d.goTo }}" style="{{ d.style }}"></span>
+              </sc-for>
+            </div>
+            <button onClick="{{ nextFeatured }}" aria-label="Siguientes" style="background:oklch(1 0 0 / 0.06);border:1px solid oklch(1 0 0 / 0.12);color:oklch(0.9 0.003 260);width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer;font-family:inherit;">›</button>
+          </div>
+        </sc-if>
       </section>
 
       <!-- CATALOGO -->
@@ -385,7 +396,30 @@ function rowsToProducts(rows) {
 }
 
 class Component extends DCLogic {
-  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false, zoomImage: null, zoomAlt: "" };
+  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false, zoomImage: null, zoomAlt: "", featuredPage: 0 };
+  featuredPageSize = 4;
+  featuredPageCount = 1;
+
+  componentDidMount() {
+    if (SHEET_CSV_URL) this.loadCatalog();
+    this._featuredTimer = setInterval(() => this.nextFeaturedPage(), 5000);
+  }
+
+  componentWillUnmount() {
+    if (this._featuredTimer) clearInterval(this._featuredTimer);
+  }
+
+  nextFeaturedPage() {
+    this.setState(s => ({ featuredPage: (s.featuredPage + 1) % this.featuredPageCount }));
+  }
+
+  prevFeaturedPage() {
+    this.setState(s => ({ featuredPage: (s.featuredPage - 1 + this.featuredPageCount) % this.featuredPageCount }));
+  }
+
+  goToFeaturedPage(i) {
+    this.setState({ featuredPage: i });
+  }
 
   toggleMenu() {
     this.setState(s => ({ menuOpen: !s.menuOpen }));
@@ -401,11 +435,6 @@ class Component extends DCLogic {
 
   closeMenu() {
     this.setState({ menuOpen: false });
-  }
-
-  componentDidMount() {
-    if (!SHEET_CSV_URL) return;
-    this.loadCatalog();
   }
 
   async loadCatalog() {
@@ -520,9 +549,25 @@ class Component extends DCLogic {
     const upcomingItems = withExtras.filter(p => p.isUpcoming);
     const active = catalogItems.find(p => p.id === this.state.activeId) || catalogItems[0];
 
+    const featured = withExtras.filter(p => p.featured);
+    const featuredPageCount = Math.max(1, Math.ceil(featured.length / this.featuredPageSize));
+    this.featuredPageCount = featuredPageCount;
+    const featuredPage = this.state.featuredPage % featuredPageCount;
+    const featuredPageItems = featured.slice(featuredPage * this.featuredPageSize, featuredPage * this.featuredPageSize + this.featuredPageSize);
+    const featuredDots = Array.from({ length: featuredPageCount }, (_, i) => ({
+      idx: i,
+      style: "width:8px;height:8px;border-radius:50%;cursor:pointer;background:" + (i === featuredPage ? "oklch(0.6 0.17 300)" : "oklch(1 0 0 / 0.2)") + ";",
+      goTo: () => this.goToFeaturedPage(i)
+    }));
+
     return {
       products: catalogItems,
-      featured: withExtras.filter(p => p.featured),
+      featured,
+      featuredPageItems,
+      featuredDots,
+      showFeaturedNav: featuredPageCount > 1,
+      prevFeatured: () => this.prevFeaturedPage(),
+      nextFeatured: () => this.nextFeaturedPage(),
       stockCount: catalogItems.filter(p => !p.soldOut).length,
       upcoming: upcomingItems,
       hasUpcoming: upcomingItems.length > 0,
