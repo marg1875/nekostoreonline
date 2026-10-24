@@ -16,6 +16,8 @@
     *{box-sizing:border-box;}
     a{color:oklch(0.72 0.15 300);text-decoration:none;}
     a:hover{color:oklch(0.8 0.15 300);}
+    @keyframes ringA{from{stroke-dashoffset:125.66}to{stroke-dashoffset:0}}
+    @keyframes ringB{from{stroke-dashoffset:125.66}to{stroke-dashoffset:0}}
     .menu-btn{display:none;background:none;border:1px solid oklch(1 0 0 / 0.15);color:oklch(0.9 0.003 260);width:42px;height:42px;border-radius:8px;font-size:20px;line-height:1;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;}
     @media (max-width: 760px){
       .site-nav{display:none !important;}
@@ -104,7 +106,13 @@
                 <span onClick="{{ d.goTo }}" style="{{ d.style }}"></span>
               </sc-for>
             </div>
-            <button onClick="{{ nextFeatured }}" aria-label="Siguientes" style="background:oklch(1 0 0 / 0.06);border:1px solid oklch(1 0 0 / 0.12);color:oklch(0.9 0.003 260);width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer;font-family:inherit;">›</button>
+            <span style="position:relative;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;">
+              <svg width="44" height="44" style="position:absolute;inset:0;transform:rotate(-90deg);pointer-events:none;">
+                <circle cx="22" cy="22" r="20" style="fill:none;stroke:oklch(1 0 0 / 0.12);stroke-width:2;"></circle>
+                <circle cx="22" cy="22" r="20" style="{{ featuredRingStyle }}"></circle>
+              </svg>
+              <button onClick="{{ nextFeatured }}" aria-label="Siguientes" style="background:oklch(1 0 0 / 0.06);border:1px solid oklch(1 0 0 / 0.12);color:oklch(0.9 0.003 260);width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer;font-family:inherit;">›</button>
+            </span>
           </div>
         </sc-if>
       </section>
@@ -401,29 +409,42 @@ function rowsToProducts(rows) {
 }
 
 class Component extends DCLogic {
-  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false, zoomImage: null, zoomAlt: "", featuredPage: 0 };
+  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false, zoomImage: null, zoomAlt: "", featuredPage: 0, featuredTick: 0 };
   featuredPageSize = 4;
   featuredPageCount = 1;
+  featuredMs = 6000;
 
   componentDidMount() {
     if (SHEET_CSV_URL) this.loadCatalog();
-    this._featuredTimer = setInterval(() => this.nextFeaturedPage(), 5000);
+    this.startFeaturedTimer();
   }
 
   componentWillUnmount() {
-    if (this._featuredTimer) clearInterval(this._featuredTimer);
+    if (this._featuredTimer) clearTimeout(this._featuredTimer);
+  }
+
+  // Cada cambio de página (automático o manual) reinicia la cuenta completa y el anillo.
+  startFeaturedTimer() {
+    if (this._featuredTimer) clearTimeout(this._featuredTimer);
+    this._featuredTimer = setTimeout(() => this.nextFeaturedPage(), this.featuredMs);
+  }
+
+  setFeaturedPage(compute) {
+    this.startFeaturedTimer();
+    if (this.featuredPageCount <= 1) return;
+    this.setState(s => ({ featuredPage: compute(s.featuredPage, this.featuredPageCount), featuredTick: s.featuredTick + 1 }));
   }
 
   nextFeaturedPage() {
-    this.setState(s => ({ featuredPage: (s.featuredPage + 1) % this.featuredPageCount }));
+    this.setFeaturedPage((p, n) => (p + 1) % n);
   }
 
   prevFeaturedPage() {
-    this.setState(s => ({ featuredPage: (s.featuredPage - 1 + this.featuredPageCount) % this.featuredPageCount }));
+    this.setFeaturedPage((p, n) => (p - 1 + n) % n);
   }
 
   goToFeaturedPage(i) {
-    this.setState({ featuredPage: i });
+    this.setFeaturedPage(() => i);
   }
 
   toggleMenu() {
@@ -448,7 +469,10 @@ class Component extends DCLogic {
       if (!res.ok) return;
       const rows = parseCSV(await res.text());
       const products = rowsToProducts(rows);
-      if (products.length) this.setState({ sheetProducts: products });
+      if (products.length) {
+        this.setState({ sheetProducts: products });
+        this.startFeaturedTimer();
+      }
     } catch (e) {
       // se queda con FALLBACK_PRODUCTS
     }
@@ -481,6 +505,7 @@ class Component extends DCLogic {
 
   goHome() {
     this.setState({ view: "home", activeId: null, zoomImage: null });
+    this.startFeaturedTimer();
   }
 
   renderVals() {
@@ -565,9 +590,12 @@ class Component extends DCLogic {
       goTo: () => this.goToFeaturedPage(i)
     }));
 
+    const featuredRingStyle = "fill:none;stroke:oklch(0.68 0.17 300);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:125.66;stroke-dashoffset:125.66;animation:" + (this.state.featuredTick % 2 ? "ringB" : "ringA") + " " + (this.featuredMs / 1000) + "s linear forwards;";
+
     return {
       products: catalogItems,
       featured,
+      featuredRingStyle,
       featuredPageItems,
       featuredDots,
       showFeaturedNav: featuredPageCount > 1,
