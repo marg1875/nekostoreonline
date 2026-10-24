@@ -487,6 +487,11 @@ class Component extends DCLogic {
     return "https://wa.me/" + number + "?text=" + encodeURIComponent(msg);
   }
 
+  restockLinkFor(number, name) {
+    const msg = "Hola! Vi que la figura de " + name + " está agotada. ¿Me avisan cuando vuelva a estar disponible?";
+    return "https://wa.me/" + number + "?text=" + encodeURIComponent(msg);
+  }
+
   reserveLinkFor(number, name, arrival) {
     const cuando = arrival ? "llega aprox. el " + arrival : "está por llegar";
     const msg = "Hola! Deseo reservar la figura de " + name + " (" + cuando + "). Entiendo que el apartado es de $100 MXN y se guarda hasta 2 semanas después de su llegada al almacén.";
@@ -528,9 +533,9 @@ class Component extends DCLogic {
       const buyStyle = soldOut ? "flex:1;text-align:center;background:oklch(1 0 0 / 0.05);color:oklch(0.55 0.006 260);padding:8px;border-radius:7px;font-size:12px;font-weight:600;cursor:default;" : "flex:1;text-align:center;background:oklch(0.6 0.17 300);color:white;padding:8px;border-radius:7px;font-size:12px;font-weight:600;";
       const detailBadgeLabel = soldOut ? "Agotado · sin piezas disponibles" : (showStockBadge ? "Última pieza disponible" : "");
       const detailBadgeStyle = !detailBadgeLabel ? "display:none;" : "display:inline-block;font-size:13px;font-weight:600;padding:6px 14px;border-radius:20px;margin-bottom:22px;" + (soldOut ? "background:oklch(1 0 0 / 0.06);color:oklch(0.65 0.006 260);" : "background:oklch(0.65 0.15 30 / 0.15);color:oklch(0.7 0.15 30);");
-      const detailBuyLabel = soldOut ? "Agotado - No disponible" : "Comprar por WhatsApp";
-      const detailBuyHref = soldOut ? void 0 : this.waLinkFor(number, p.name, p.price);
-      const detailBuyStyle = soldOut ? "display:block;text-align:center;background:oklch(1 0 0 / 0.05);color:oklch(0.55 0.006 260);padding:15px;border-radius:10px;font-weight:700;font-size:15px;cursor:default;" : "display:block;text-align:center;background:oklch(0.6 0.17 300);color:white;padding:15px;border-radius:10px;font-weight:700;font-size:15px;";
+      const detailBuyLabel = soldOut ? "Avísame cuando vuelva a estar disponible" : "Comprar por WhatsApp";
+      const detailBuyHref = soldOut ? this.restockLinkFor(number, p.name) : this.waLinkFor(number, p.name, p.price);
+      const detailBuyStyle = soldOut ? "display:block;text-align:center;background:transparent;border:1.5px solid oklch(0.68 0.17 300);color:oklch(0.78 0.13 300);padding:14px;border-radius:10px;font-weight:700;font-size:15px;" : "display:block;text-align:center;background:oklch(0.6 0.17 300);color:white;padding:15px;border-radius:10px;font-weight:700;font-size:15px;";
       const isUsed = !!p.isUsed;
       const conditionLabel = p.conditionLabel || "Nueva, sellada";
       const usedTagStyle = isUsed ? "position:absolute;top:12px;right:12px;z-index:2;background:oklch(0.3 0.02 260 / 0.85);color:oklch(0.92 0.01 90);font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;letter-spacing:0.03em;" : "display:none;";
@@ -575,11 +580,12 @@ class Component extends DCLogic {
       };
     });
 
-    const catalogItems = withExtras.filter(p => !p.isUpcoming);
+    const catalogRaw = withExtras.filter(p => !p.isUpcoming);
+    const catalogItems = [...catalogRaw.filter(p => !p.soldOut), ...catalogRaw.filter(p => p.soldOut)];
     const upcomingItems = withExtras.filter(p => p.isUpcoming);
     const active = catalogItems.find(p => p.id === this.state.activeId) || catalogItems[0];
 
-    const featured = withExtras.filter(p => p.featured);
+    const featured = withExtras.filter(p => p.featured && !p.soldOut);
     const featuredPageCount = Math.max(1, Math.ceil(featured.length / this.featuredPageSize));
     this.featuredPageCount = featuredPageCount;
     const featuredPage = this.state.featuredPage % featuredPageCount;
