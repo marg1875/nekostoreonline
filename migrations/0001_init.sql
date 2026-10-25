@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS products (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  price REAL NOT NULL DEFAULT 0,
+  stock INTEGER NOT NULL DEFAULT 0,
+  featured INTEGER NOT NULL DEFAULT 0,
+  image TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  condition TEXT NOT NULL DEFAULT 'NEW',
+  brand TEXT NOT NULL DEFAULT '',
+  collection TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT '',
+  arrival TEXT NOT NULL DEFAULT '',
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS login_attempts (
+  ip TEXT PRIMARY KEY,
+  count INTEGER NOT NULL DEFAULT 0,
+  window_start INTEGER NOT NULL DEFAULT 0
+);
