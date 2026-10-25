@@ -3,7 +3,7 @@ import { validateProduct, parseId } from "../../../_lib/validate.js";
 import { deleteImageIfOrphan } from "../../../_lib/images.js";
 
 // Lista blanca de columnas editables: los nombres vienen del código, los valores siempre van enlazados (bind).
-const EDITABLE = ["name", "price", "stock", "featured", "image", "description", "condition", "brand", "collection", "status", "arrival"];
+const EDITABLE = ["name", "price", "stock", "featured", "image", "gallery", "description", "condition", "brand", "collection", "status", "arrival"];
 
 export async function onRequestPut({ request, env, params }) {
   const id = parseId(params.id);

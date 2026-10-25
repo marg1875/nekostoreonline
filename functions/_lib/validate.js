@@ -41,6 +41,17 @@ export function validateProduct(input, partial = false) {
     if (v === null || (v !== "" && (!IMAGE_RE.test(v) || v.includes("..")))) return { error: "Imagen inválida" };
     out.image = v;
   }
+  if (has("gallery") || !partial) {
+    const g = input.gallery ?? [];
+    if (!Array.isArray(g) || g.length > 20) return { error: "Galería inválida (máx. 20 fotos)" };
+    const list = [];
+    for (const item of g) {
+      const v = str(item, 500);
+      if (!v || !IMAGE_RE.test(v) || v.includes("..")) return { error: "Imagen de galería inválida" };
+      list.push(v);
+    }
+    out.gallery = JSON.stringify(list);
+  }
   if (has("description") || !partial) {
     const v = str(input.description ?? "", 2000);
     if (v === null) return { error: "Descripción demasiado larga (máx. 2000)" };

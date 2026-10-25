@@ -1,6 +1,6 @@
 (() => {
   const $ = (id) => document.getElementById(id);
-  const state = { products: [], filter: "stock", query: "", editing: null, image: "" };
+  const state = { products: [], filter: "stock", query: "", editing: null, image: "", gallery: [] };
 
   function el(tag, props, ...kids) {
     const n = document.createElement(tag);
@@ -165,6 +165,49 @@
     if (path) img.src = imgSrc(path); else img.removeAttribute("src");
   }
 
+  function renderGallery() {
+    const box = $("galleryList");
+    box.replaceChildren(...state.gallery.map((path, i) =>
+      el("div", { class: "gal-item" },
+        el("img", { src: imgSrc(path), alt: "" }),
+        el("button", { type: "button", "aria-label": "Quitar foto", onclick: () => { state.gallery.splice(i, 1); renderGallery(); } }, "✕"))));
+  }
+
+  async function addGalleryFiles(files) {
+    $("galMsg").textContent = "Subiendo…";
+    try {
+      for (const f of files) {
+        const blob = await resizeToJpeg(f);
+        const form = new FormData();
+        form.append("file", blob, "foto.jpg");
+        const { path } = await api("POST", "/api/admin/image", form, true);
+        state.gallery.push(path);
+      }
+      renderGallery();
+      $("galMsg").textContent = "Fotos listas. Recuerda guardar.";
+    } catch (e) {
+      $("galMsg").textContent = e.message;
+    }
+  }
+
+  async function addGalleryUrl() {
+    const url = $("galUrl").value.trim();
+    if (!url) return;
+    $("galMsg").textContent = "Descargando y guardando copia propia…";
+    $("galFetch").disabled = true;
+    try {
+      const { path } = await api("POST", "/api/admin/image", { url });
+      state.gallery.push(path);
+      renderGallery();
+      $("galUrl").value = "";
+      $("galMsg").textContent = "Foto lista. Recuerda guardar.";
+    } catch (e) {
+      $("galMsg").textContent = e.message;
+    } finally {
+      $("galFetch").disabled = false;
+    }
+  }
+
   function openEdit(p) {
     state.editing = p ? p.id : null;
     fillDatalists();
@@ -184,6 +227,10 @@
     $("editError").classList.add("hidden");
     $("deleteBtn").classList.toggle("hidden", !p);
     setPreview(p ? p.image : "");
+    state.gallery = p ? [...(p.gallery || [])] : [];
+    renderGallery();
+    $("galUrl").value = "";
+    $("galMsg").textContent = "";
     toggleArrival();
     $("editDialog").showModal();
   }
@@ -245,7 +292,8 @@
       collection: $("fCollection").value.trim(),
       description: $("fDescription").value.trim(),
       featured: $("fFeatured").checked,
-      image: state.image
+      image: state.image,
+      gallery: state.gallery
     };
   }
 
@@ -290,9 +338,9 @@
   }
 
   function exportCsv() {
-    const cols = ["id", "name", "price", "stock", "featured", "image", "description", "condition", "brand", "collection", "status", "arrival"];
+    const cols = ["id", "name", "price", "stock", "featured", "image", "gallery", "description", "condition", "brand", "collection", "status", "arrival"];
     const q = (v) => '"' + String(v ?? "").replace(/"/g, '""') + '"';
-    const lines = [cols.join(",")].concat(state.products.map((p) => cols.map((c) => q(p[c])).join(",")));
+    const lines = [cols.join(",")].concat(state.products.map((p) => cols.map((c) => q(Array.isArray(p[c]) ? p[c].join(" | ") : p[c])).join(",")));
     const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
     const a = el("a", { href: URL.createObjectURL(blob), download: "inventario-nekostore-" + new Date().toISOString().slice(0, 10) + ".csv" });
     document.body.append(a); a.click(); a.remove();
@@ -324,6 +372,8 @@
   $("fStatus").addEventListener("change", toggleArrival);
   $("imgFile").addEventListener("change", (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) uploadFile(f); });
   $("imgFetch").addEventListener("click", fetchUrl);
+  $("galFile").addEventListener("change", (e) => { const fs = [...e.target.files]; e.target.value = ""; if (fs.length) addGalleryFiles(fs); });
+  $("galFetch").addEventListener("click", addGalleryUrl);
 
   (async () => {
     try {

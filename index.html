@@ -169,6 +169,7 @@
                 <span style="{{ p.usedTagStyle }}">USADA</span>
                 <img src="{{ p.imageUrl }}" alt="{{ p.name }}" style="position:relative;z-index:1;width:100%;height:100%;object-fit:contain;" />
                 <span style="position:absolute;bottom:10px;right:10px;z-index:3;background:oklch(0.1 0 0 / 0.6);color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;pointer-events:none;">🔍</span>
+                <span style="{{ p.photoBadgeStyle }}">{{ p.photoBadge }}</span>
               </div>
               <div style="padding:14px;">
                 <div style="font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.3;min-height:36px;">{{ p.name }}</div>
@@ -223,15 +224,24 @@
   <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
     <main style="max-width:1000px;margin:0 auto;padding:50px 32px 90px;">
       <div class="detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
-        <div onClick="{{ active.openZoomImg }}" style="cursor:zoom-in;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);border-radius:18px;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;">
+        <div style="min-width:0;">
+        <div onClick="{{ detailZoom }}" style="cursor:zoom-in;position:relative;aspect-ratio:1/1;background:oklch(0.94 0.005 300);border-radius:18px;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden;">
           <span style="{{ active.usedTagStyle }}">USADA</span>
-          <img src="{{ active.imageUrl }}" alt="{{ active.name }}" style="{{ active.imgStyle }}" />
+          <img src="{{ detailImage }}" alt="{{ active.name }}" style="{{ active.imgStyle }}" />
           <sc-if value="{{ active.soldOut }}" hint-placeholder-val="{{ false }}">
             <div style="position:absolute;inset:0;z-index:2;background:oklch(0.1 0 0 / 0.5);display:flex;align-items:center;justify-content:center;pointer-events:none;border-radius:18px;">
               <span style="transform:rotate(-16deg);background:oklch(0.15 0 0 / 0.85);border:2px solid white;color:white;font-family:'Outfit',sans-serif;font-weight:800;font-size:22px;letter-spacing:0.06em;padding:10px 30px;white-space:nowrap;">SIN STOCK</span>
             </div>
           </sc-if>
           <span style="position:absolute;bottom:14px;right:14px;z-index:3;background:oklch(0.1 0 0 / 0.6);color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none;">🔍</span>
+        </div>
+        <sc-if value="{{ detailMulti }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:10px;margin-top:12px;overflow-x:auto;padding-bottom:4px;">
+            <sc-for list="{{ detailThumbs }}" as="t" hint-placeholder-count="4">
+              <img src="{{ t.url }}" alt="" onClick="{{ t.pick }}" style="{{ t.style }}" />
+            </sc-for>
+          </div>
+        </sc-if>
         </div>
         <div>
           <div style="font-size:13px;color:oklch(0.72 0.15 300);font-weight:600;margin-bottom:10px;">{{ active.brandLine }}</div>
@@ -256,6 +266,11 @@
   <sc-if value="{{ zoomImage }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeZoom }}" style="position:fixed;inset:0;z-index:100;background:oklch(0.05 0 0 / 0.92);display:flex;align-items:center;justify-content:center;padding:32px;cursor:zoom-out;">
       <img src="{{ zoomImage }}" alt="{{ zoomAlt }}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;" />
+      <sc-if value="{{ zoomMulti }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ zoomPrev }}" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);background:oklch(1 0 0 / 0.1);border:1px solid oklch(1 0 0 / 0.25);color:white;width:44px;height:44px;border-radius:50%;font-size:24px;cursor:pointer;font-family:inherit;">‹</button>
+        <button onClick="{{ zoomNext }}" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:oklch(1 0 0 / 0.1);border:1px solid oklch(1 0 0 / 0.25);color:white;width:44px;height:44px;border-radius:50%;font-size:24px;cursor:pointer;font-family:inherit;">›</button>
+        <span style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:oklch(0.1 0 0 / 0.7);color:white;font-size:13px;font-weight:600;padding:5px 14px;border-radius:20px;">{{ zoomCounter }}</span>
+      </sc-if>
       <button onClick="{{ closeZoom }}" style="position:absolute;top:20px;right:20px;background:oklch(1 0 0 / 0.1);border:1px solid oklch(1 0 0 / 0.25);color:white;width:42px;height:42px;border-radius:50%;font-size:20px;cursor:pointer;font-family:inherit;">✕</button>
     </div>
   </sc-if>
@@ -403,6 +418,7 @@ function apiToProducts(list) {
       stock: Number(p.stock) || 0,
       featured: !!p.featured,
       imageUrl: resolveImage(p.image),
+      images: [resolveImage(p.image)].concat(Array.isArray(p.gallery) ? p.gallery.map(resolveImage) : []).filter(Boolean),
       desc: p.description || "",
       isUsed,
       conditionLabel: isUsed ? "Usada / reempacada" : "Nueva, sellada",
@@ -439,7 +455,7 @@ function rowsToProducts(rows) {
 }
 
 class Component extends DCLogic {
-  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false, zoomImage: null, zoomAlt: "", featuredPage: 0, featuredTick: 0 };
+  state = { view: "home", activeId: null, sheetProducts: null, menuOpen: false, zoomImage: null, zoomList: [], zoomIdx: 0, detailIdx: 0, zoomAlt: "", featuredPage: 0, featuredTick: 0 };
   featuredPageSize = 4;
   featuredPageCount = 1;
   featuredMs = 6000;
@@ -481,12 +497,20 @@ class Component extends DCLogic {
     this.setState(s => ({ menuOpen: !s.menuOpen }));
   }
 
-  openZoom(url, alt) {
-    this.setState({ zoomImage: url, zoomAlt: alt || "" });
+  openZoom(list, idx, alt) {
+    this.setState({ zoomList: list, zoomIdx: idx, zoomAlt: alt || "" });
   }
 
   closeZoom() {
-    this.setState({ zoomImage: null, zoomAlt: "" });
+    this.setState({ zoomList: [], zoomIdx: 0, zoomAlt: "" });
+  }
+
+  zoomStep(e, d) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    this.setState(s => {
+      const n = s.zoomList.length || 1;
+      return { zoomIdx: (s.zoomIdx + d + n) % n };
+    });
   }
 
   closeMenu() {
@@ -543,7 +567,7 @@ class Component extends DCLogic {
   }
 
   openProduct(id) {
-    this.setState({ view: "detail", activeId: id, zoomImage: null });
+    this.setState({ view: "detail", activeId: id, zoomList: [], zoomIdx: 0, detailIdx: 0 });
     window.scrollTo(0, 0);
   }
 
@@ -553,7 +577,7 @@ class Component extends DCLogic {
   }
 
   goHome() {
-    this.setState({ view: "home", activeId: null, zoomImage: null });
+    this.setState({ view: "home", activeId: null, zoomList: [], zoomIdx: 0, detailIdx: 0 });
     this.startFeaturedTimer();
   }
 
@@ -580,6 +604,7 @@ class Component extends DCLogic {
       const detailBuyLabel = soldOut ? "Avísame cuando vuelva a estar disponible" : "Comprar por WhatsApp";
       const detailBuyHref = soldOut ? this.restockLinkFor(number, p.name) : this.waLinkFor(number, p.name, p.price);
       const detailBuyStyle = soldOut ? "display:block;text-align:center;background:transparent;border:1.5px solid oklch(0.68 0.17 300);color:oklch(0.78 0.13 300);padding:14px;border-radius:10px;font-weight:700;font-size:15px;" : "display:block;text-align:center;background:oklch(0.6 0.17 300);color:white;padding:15px;border-radius:10px;font-weight:700;font-size:15px;";
+      const images = (p.images && p.images.length ? p.images : [p.imageUrl]).filter(Boolean);
       const isUsed = !!p.isUsed;
       const conditionLabel = p.conditionLabel || "Nueva, sellada";
       const usedTagStyle = isUsed ? "position:absolute;top:12px;right:12px;z-index:2;background:oklch(0.3 0.02 260 / 0.85);color:oklch(0.92 0.01 90);font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;letter-spacing:0.03em;" : "display:none;";
@@ -595,7 +620,10 @@ class Component extends DCLogic {
         priceFmt: this.fmt(p.price),
         waLink: this.waLinkFor(number, p.name, p.price),
         openMe: () => this.openProduct(p.id),
-        openZoomImg: () => this.openZoom(p.imageUrl, p.name),
+        images,
+        openZoomImg: () => this.openZoom(images, 0, p.name),
+        photoBadge: images.length > 1 ? "📷 " + images.length : "",
+        photoBadgeStyle: images.length > 1 ? "position:absolute;bottom:10px;left:10px;z-index:3;background:oklch(0.1 0 0 / 0.6);color:white;font-size:12px;font-weight:600;padding:4px 9px;border-radius:14px;pointer-events:none;" : "display:none;",
         destacadaClick,
         description: p.desc,
         isUsed,
@@ -628,6 +656,17 @@ class Component extends DCLogic {
     const catalogItems = [...catalogRaw.filter(p => !p.soldOut), ...catalogRaw.filter(p => p.soldOut)];
     const upcomingItems = withExtras.filter(p => p.isUpcoming);
     const active = catalogItems.find(p => p.id === this.state.activeId) || catalogItems[0];
+
+    const activeImages = active ? active.images : [];
+    const detailCount = activeImages.length;
+    const detailIdx = Math.max(0, Math.min(this.state.detailIdx, detailCount - 1));
+    const detailThumbs = activeImages.map((u, i) => ({
+      url: u,
+      style: "flex:0 0 auto;width:68px;height:68px;object-fit:contain;background:oklch(0.94 0.005 300);border-radius:10px;padding:4px;cursor:pointer;border:2px solid " + (i === detailIdx ? "oklch(0.68 0.17 300)" : "transparent") + ";",
+      pick: () => this.setState({ detailIdx: i })
+    }));
+    const zoomList = this.state.zoomList;
+    const zoomIdx = Math.min(this.state.zoomIdx, Math.max(0, zoomList.length - 1));
 
     const featured = withExtras.filter(p => p.featured && !p.soldOut);
     const featuredPageCount = Math.max(1, Math.ceil(featured.length / this.featuredPageSize));
@@ -664,7 +703,15 @@ class Component extends DCLogic {
       menuIcon: this.state.menuOpen ? "✕" : "☰",
       toggleMenu: () => this.toggleMenu(),
       closeMenu: () => this.closeMenu(),
-      zoomImage: this.state.zoomImage,
+      detailImage: activeImages[detailIdx],
+      detailThumbs,
+      detailMulti: detailCount > 1,
+      detailZoom: () => this.openZoom(activeImages, detailIdx, active ? active.name : ""),
+      zoomImage: zoomList[zoomIdx] || null,
+      zoomMulti: zoomList.length > 1,
+      zoomCounter: (zoomIdx + 1) + " / " + zoomList.length,
+      zoomPrev: (e) => this.zoomStep(e, -1),
+      zoomNext: (e) => this.zoomStep(e, 1),
       zoomAlt: this.state.zoomAlt,
       closeZoom: () => this.closeZoom()
     };

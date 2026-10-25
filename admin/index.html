@@ -66,6 +66,19 @@
       </div>
     </div>
 
+    <label>Fotos adicionales</label>
+    <div id="galleryList" class="gallery-list"></div>
+    <div class="img-controls">
+      <label class="btn small file-btn">Agregar fotos
+        <input id="galFile" type="file" accept="image/jpeg,image/png,image/webp" multiple class="hidden">
+      </label>
+      <div class="url-row">
+        <input id="galUrl" type="url" placeholder="o pega URL de otra foto" autocomplete="off">
+        <button type="button" id="galFetch" class="btn small">Traer</button>
+      </div>
+      <p id="galMsg" class="muted small-text"></p>
+    </div>
+
     <label for="fName">Nombre</label>
     <input id="fName" maxlength="120" required>
 

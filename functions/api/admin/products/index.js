@@ -14,10 +14,10 @@ export async function onRequestPost({ request, env }) {
   if (error) return json({ error }, 400);
 
   const res = await env.DB.prepare(
-    `INSERT INTO products (name, price, stock, featured, image, description, condition, brand, collection, status, arrival, sort_order)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM products))`
+    `INSERT INTO products (name, price, stock, featured, image, gallery, description, condition, brand, collection, status, arrival, sort_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM products))`
   ).bind(
-    value.name, value.price, value.stock, value.featured, value.image, value.description,
+    value.name, value.price, value.stock, value.featured, value.image, value.gallery, value.description,
     value.condition, value.brand, value.collection, value.status, value.arrival
   ).run();
 
